@@ -1,0 +1,18 @@
+[project]
+name = "go2-driver"
+version = "0.1.0"
+description = "WebRTC driver, gamepad, and streaming primitives for the Unitree Go2"
+requires-python = ">=3.12"
+dependencies = [
+    "unitree_webrtc_connect",
+    "evdev",
+    "numpy",
+    "opencv-python",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/go2_driver"]
