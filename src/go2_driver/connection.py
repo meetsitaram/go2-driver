@@ -59,10 +59,13 @@ def resolve_ip(mode: str, ip: str | None) -> str:
     return GO2_AP_IP
 
 
-def _make_conn(mode: str, ip: str) -> UnitreeWebRTCConnection:
+def _make_conn(mode: str, ip: str, aes_key: str | None = None) -> UnitreeWebRTCConnection:
     if mode == "ap":
         return UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalAP)
-    return UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip=ip)
+    kwargs: dict = {"ip": ip}
+    if aes_key:
+        kwargs["aes_128_key"] = aes_key
+    return UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, **kwargs)
 
 
 async def _async_connect(conn: UnitreeWebRTCConnection):
@@ -74,10 +77,11 @@ async def _async_connect(conn: UnitreeWebRTCConnection):
 class Go2Connection:
     """Manages a WebRTC connection to the Go2 with retry logic and a background event loop."""
 
-    def __init__(self, mode: str, ip: str | None):
+    def __init__(self, mode: str, ip: str | None, aes_key: str | None = None):
         _patch_error_handler()
         self.mode = mode
         self.ip = resolve_ip(mode, ip)
+        self.aes_key = aes_key
         self.conn: UnitreeWebRTCConnection | None = None
         self.loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         self._loop_thread: threading.Thread | None = None
@@ -85,7 +89,7 @@ class Go2Connection:
     def connect(self) -> UnitreeWebRTCConnection:
         """Connect with retries. Returns the live connection. Starts the event loop thread."""
         for attempt in range(1, MAX_RETRIES + 1):
-            self.conn = _make_conn(self.mode, self.ip)
+            self.conn = _make_conn(self.mode, self.ip, self.aes_key)
             try:
                 print(f"  Connecting to Go2 (attempt {attempt}/{MAX_RETRIES}) ...")
                 self.loop.run_until_complete(_async_connect(self.conn))
