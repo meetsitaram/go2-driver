@@ -54,18 +54,21 @@ PULSE_TIMES    = [0.0, 0.6, 1.2]
 PULSE_MS       = 250
 
 # Known Go2 button-to-action mapping (longest combo first)
+# Note: Pro-only moves use double-click detection on the robot firmware side;
+# our single-press mapping still triggers them since we send raw key state.
 BUTTON_ACTIONS = [
     (KEY_L2 | KEY_A,       "Lock posture (stand/crouch toggle)"),
     (KEY_L2 | KEY_B,       "Damp (motors off)"),
     (KEY_L2 | KEY_X,       "Stand up from fall"),
     (KEY_L2 | KEY_SELECT,  "Searchlight toggle"),
+    (KEY_R2 | KEY_X,       "Handstand (Pro only)"),
     (KEY_R2 | KEY_A,       "Stretch"),
     (KEY_R2 | KEY_B,       "Shake hands"),
     (KEY_R2 | KEY_Y,       "Love"),
     (KEY_R1 | KEY_X,       "Pounce"),
     (KEY_R1 | KEY_A,       "Jump forward"),
-    (KEY_R1 | KEY_B,       "Sit down"),
-    (KEY_L1 | KEY_A,       "Greet"),
+    (KEY_R1 | KEY_B,       "Sit down / Cross-step (Pro dbl-click B)"),
+    (KEY_L1 | KEY_A,       "Greet / Free-avoid (Pro dbl-click A)"),
     (KEY_L1 | KEY_B,       "Dance"),
     (KEY_RIGHT | KEY_START, "Stair mode 1 (fwd up / bwd down)"),
     (KEY_LEFT | KEY_SELECT, "Stair mode 2 (fwd down)"),
