@@ -316,8 +316,9 @@ class SafetyFilter:
     """Applies blocked-combo rules, emergency stop, and speed limiting to controller output."""
 
     def __init__(self, allow_all: bool, speed_limit: float, rumble: RumbleHelper | None,
-                 conn=None, loop=None, dry_run: bool = False):
+                 conn=None, loop=None, dry_run: bool = False, no_countdown: bool = False):
         self.allow_all = allow_all
+        self.no_countdown = no_countdown
         self.speed_limit = speed_limit
         self.rumble = rumble
         self.conn = conn
@@ -416,6 +417,8 @@ class SafetyFilter:
             pass
 
     def _handle_combos(self, keys: int) -> int:
+        if self.allow_all and self.no_countdown:
+            return keys
         if self.allow_all:
             active_descs: set[str] = set()
             for combo_mask, strip_mask, desc in BLOCKED_COMBOS:
